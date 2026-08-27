@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIM Online viewing registration - Heartfelt International Ministries</title>
     <link rel="icon" href="catchfire2026.jpeg" type="image/jpeg">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com 'unsafe-inline' 'unsafe-eval'; img-src 'self' https://images.unsplash.com data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com https://bppwrpxmlglfkhcjzicn.supabase.co 'unsafe-inline' 'unsafe-eval'; img-src 'self' https://images.unsplash.com data:;">
     <meta name="referrer" content="no-referrer">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -413,6 +415,23 @@
             }
         }
 
+        // Ensure Supabase table exists with correct schema
+        async function ensureSupabaseTable() {
+            try {
+                const { error } = await supabase.from(SUPABASE_TABLE).select('count', { count: 'exact', head: true });
+                if (error && error.code === '42P01') {
+                    console.warn('Table does not exist. Please create table "Viwers" in Supabase with columns: id, date, category, name, location, total, contact, breakdown, prayer_expectations');
+                }
+            } catch (e) {
+                console.error('Supabase connection check failed:', e);
+            }
+        }
+
+        // Initialize Supabase table check
+        document.addEventListener('DOMContentLoaded', () => {
+            ensureSupabaseTable();
+        });
+
         // Splash Screen Dismissal
         function dismissSplash() {
             const splash = document.getElementById('splashScreen');
@@ -508,6 +527,12 @@
         const EMAIL_KEY = 'him_admin_email';
         const ENCRYPTION_KEY = 'H1M-Fl@m3-2026-S3cur3';
 
+        // Supabase client initialization
+        const SUPABASE_URL = 'https://bppwrpxmlglfkhcjzicn.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_GgKxsbGu_N9_wJ7umrgq8Q_ZQiww7tD';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUPABASE_TABLE = 'Viwers';
+
         function encrypt(text) {
             let result = '';
             for (let i = 0; i < text.length; i++) {
@@ -580,6 +605,26 @@
             regs.unshift(newReg);
             saveRegistrations(regs);
 
+            // Save to Supabase
+            const supabasePayload = {
+                id: newReg.id,
+                date: newReg.date,
+                category: newReg.category,
+                name: newReg.name,
+                location: newReg.location,
+                total: newReg.total,
+                contact: newReg.contact,
+                breakdown: newReg.breakdown,
+                prayer_expectations: newReg.prayerExpectations || ''
+            };
+
+            supabase.from(SUPABASE_TABLE).insert([supabasePayload]).then(({ error }) => {
+                if (error) {
+                    console.error('Supabase insert error:', error);
+                    showToast('Saved locally. Sync to cloud failed.');
+                }
+            });
+
             // Generate WhatsApp Formatted Message
             const message = `*HIM VIEWING CENTRE REGISTRATION*\n\n1. Centre Category: *${category}*\n2. Centre Name: *${name}*\n3. Country, Town/City/Village: *${location}*\n4. Number of people who gather at the Centre: *${total}*\n5. Genders, Adults, Children: *${breakdown}*\n6. My Prayer Expectations: *${prayerExpectations}*\nContact Number: *${contact}*\n\n*One-Church-Many-Locations!*`;
 
@@ -612,19 +657,40 @@
                 document.getElementById('loggedInEmail').textContent = email;
             }
 
-            const regs = getStoredRegistrations();
             const tbody = document.getElementById('adminTableBody');
             const emptyState = document.getElementById('emptyState');
 
-            // Update stats
+            supabase.from(SUPABASE_TABLE).select('*').order('id', { ascending: false }).then(({ data, error }) => {
+                if (error) {
+                    console.error('Supabase fetch error:', error);
+                    showToast('Unable to load data from cloud. Showing local data.');
+                    renderLocalRegistrations();
+                    return;
+                }
+
+                const regs = data || [];
+                updateStats(regs);
+                renderTable(regs);
+            });
+        }
+
+        function renderLocalRegistrations() {
+            const regs = getStoredRegistrations();
+            updateStats(regs);
+            renderTable(regs);
+        }
+
+        function updateStats(regs) {
             document.getElementById('statTotalCentres').innerText = regs.length;
             const totalAttendees = regs.reduce((sum, r) => sum + (parseInt(r.total) || 0), 0);
             document.getElementById('statTotalAttendees').innerText = totalAttendees;
-
-            // Calculate unique categories
             const uniqueCategories = [...new Set(regs.map(r => r.category))].length;
             document.getElementById('statCategories').innerText = uniqueCategories;
+        }
 
+        function renderTable(regs) {
+            const tbody = document.getElementById('adminTableBody');
+            const emptyState = document.getElementById('emptyState');
             tbody.innerHTML = '';
             if (regs.length === 0) {
                 emptyState.classList.remove('hidden');
@@ -646,7 +712,7 @@
                     </td>
                     <td class="py-4 px-4 text-indigoTheme-200 font-mono text-xs">${escapeHtml(reg.contact)}</td>
                     <td class="py-4 px-4 text-xs text-indigoTheme-300 max-w-xs truncate">${escapeHtml(reg.breakdown)}</td>
-                    <td class="py-4 px-4 text-xs text-indigoTheme-300 max-w-xs truncate">${escapeHtml(reg.prayerExpectations || '')}</td>
+                    <td class="py-4 px-4 text-xs text-indigoTheme-300 max-w-xs truncate">${escapeHtml(reg.prayer_expectations || reg.prayerExpectations || '')}</td>
                     <td class="py-4 px-4 text-right space-x-2">
                         <button onclick="sendWhatsAppDirect('${escapeHtml(reg.contact)}')" class="p-2 bg-emerald-600/80 hover:bg-emerald-600 text-white rounded-lg transition" title="Message Leader">
                             <i class="fa-brands fa-whatsapp"></i>
@@ -666,30 +732,54 @@
             let regs = getStoredRegistrations();
             regs = regs.filter(r => r.id !== id);
             saveRegistrations(regs);
+
+            supabase.from(SUPABASE_TABLE).delete().eq('id', id).then(({ error }) => {
+                if (error) {
+                    console.error('Supabase delete error:', error);
+                    showToast('Deleted locally. Cloud sync failed.');
+                }
+            });
+
             loadRegistrations();
             showToast('Viewing centre record deleted.');
         }
 
         // Clear All Data
         function clearAllData() {
-            if (confirm('Are you sure you want to clear all registered viewing centres?')) {
-                localStorage.removeItem(STORAGE_KEY);
-                loadRegistrations();
-                showToast('All records cleared.');
-            }
+            if (!confirm('Are you sure you want to clear all registered viewing centres?')) return;
+            localStorage.removeItem(STORAGE_KEY);
+
+            supabase.from(SUPABASE_TABLE).delete().then(({ error }) => {
+                if (error) {
+                    console.error('Supabase clear error:', error);
+                    showToast('Cleared locally. Cloud sync failed.');
+                }
+            });
+
+            loadRegistrations();
+            showToast('All records cleared.');
         }
 
         // Export Data as CSV
         function exportData() {
-            const regs = getStoredRegistrations();
-            if (regs.length === 0) {
-                showToast('No data available to export.');
-                return;
-            }
+            supabase.from(SUPABASE_TABLE).select('*').order('id', { ascending: false }).then(({ data, error }) => {
+                if (error || !data || data.length === 0) {
+                    const localRegs = getStoredRegistrations();
+                    if (localRegs.length === 0) {
+                        showToast('No data available to export.');
+                        return;
+                    }
+                    exportCsv(localRegs);
+                    return;
+                }
+                exportCsv(data);
+            });
+        }
 
+        function exportCsv(regs) {
             let csvContent = "data:text/csv;charset=utf-8,ID,Date,Category,Name,Location,TotalPeople,Contact,Breakdown,Prayer Expectations\n";
             regs.forEach(r => {
-                csvContent += `"${r.id}","${r.date}","${escapeCsv(r.category)}","${escapeCsv(r.name)}","${escapeCsv(r.location)}",${r.total},"${escapeCsv(r.contact)}","${escapeCsv(r.breakdown)}","${escapeCsv(r.prayerExpectations || '')}"\n`;
+                csvContent += `"${r.id}","${r.date}","${escapeCsv(r.category)}","${escapeCsv(r.name)}","${escapeCsv(r.location)}",${r.total},"${escapeCsv(r.contact)}","${escapeCsv(r.breakdown)}","${escapeCsv(r.prayer_expectations || r.prayerExpectations || '')}"\n`;
             });
 
             const encodedUri = encodeURI(csvContent);
@@ -704,50 +794,28 @@
 
         // Filter Table in Admin
         function filterTable() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const regs = getStoredRegistrations();
-            const filtered = regs.filter(r =>
-                r.name.toLowerCase().includes(query) ||
-                r.location.toLowerCase().includes(query) ||
-                r.category.toLowerCase().includes(query) ||
-                (r.prayerExpectations && r.prayerExpectations.toLowerCase().includes(query))
-            );
-
-            const tbody = document.getElementById('adminTableBody');
-            const emptyState = document.getElementById('emptyState');
-            tbody.innerHTML = '';
-
-            if (filtered.length === 0) {
-                emptyState.classList.remove('hidden');
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                loadRegistrations();
                 return;
             }
-            emptyState.classList.add('hidden');
 
-            filtered.forEach((reg) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-indigoTheme-900/50 transition border-b border-indigoTheme-900";
-                tr.innerHTML = `
-                    <td class="py-4 px-4">
-                        <div class="font-bold text-white">${escapeHtml(reg.name)}</div>
-                        <span class="text-xs text-goldTheme bg-goldTheme/10 px-2 py-0.5 rounded-full inline-block mt-1">${escapeHtml(reg.category)}</span>
-                    </td>
-                    <td class="py-4 px-4 text-indigoTheme-200">${escapeHtml(reg.location)}</td>
-                    <td class="py-4 px-4">
-                        <span class="font-semibold text-white bg-indigoTheme-800 px-2.5 py-1 rounded-lg">${reg.total} people</span>
-                    </td>
-                    <td class="py-4 px-4 text-indigoTheme-200 font-mono text-xs">${escapeHtml(reg.contact)}</td>
-                    <td class="py-4 px-4 text-xs text-indigoTheme-300 max-w-xs truncate">${escapeHtml(reg.breakdown)}</td>
-                    <td class="py-4 px-4 text-xs text-indigoTheme-300 max-w-xs truncate">${escapeHtml(reg.prayerExpectations || '')}</td>
-                    <td class="py-4 px-4 text-right space-x-2">
-                        <button onclick="sendWhatsAppDirect('${escapeHtml(reg.contact)}')" class="p-2 bg-emerald-600/80 hover:bg-emerald-600 text-white rounded-lg transition" title="Message Leader">
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </button>
-                        <button onclick="deleteRegistration('${reg.id}')" class="p-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg transition" title="Delete">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+            supabase.from(SUPABASE_TABLE).select('*').or(`name.ilike.%${query}%,location.ilike.%${query}%,category.ilike.%${query}%,prayer_expectations.ilike.%${query}%`).order('id', { ascending: false }).then(({ data, error }) => {
+                if (error) {
+                    console.error('Supabase search error:', error);
+                    const regs = getStoredRegistrations().filter(r =>
+                        r.name.toLowerCase().includes(query) ||
+                        r.location.toLowerCase().includes(query) ||
+                        r.category.toLowerCase().includes(query) ||
+                        (r.prayerExpectations && r.prayerExpectations.toLowerCase().includes(query))
+                    );
+                    renderTable(regs);
+                    updateStats(regs);
+                    return;
+                }
+                const regs = data || [];
+                updateStats(regs);
+                renderTable(regs);
             });
         }
 
