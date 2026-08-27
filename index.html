@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM Online viewing registration - Heartfelt International Ministries</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indigoTheme: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            600: '#4f46e5',
+                            800: '#3730a3',
+                            900: '#312e81',
+                            950: '#1e1b4b',
+                        },
+                        goldTheme: {
+                            light: '#fef08a',
+                            DEFAULT: '#d4af37',
+                            dark: '#997a15',
+                            metallic: '#bf9b30'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gold-gradient {
+            background: linear-gradient(135deg, #fef08a 0%, #d4af37 50%, #997a15 100%);
+        }
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #fef08a 0%, #facc15 50%, #ca8a04 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .indigo-gradient {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3730a3 100%);
+        }
+        .glass-card {
+            background: rgba(30, 27, 75, 0.85);
+            backdrop-filter: blur(16px);
+        }
+        .glass-light {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1b4b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-indigoTheme-950 text-indigoTheme-50 font-sans min-h-screen flex flex-col justify-between selection:bg-goldTheme selection:text-indigoTheme-950 overflow-x-hidden">
+
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen" class="fixed inset-0 z-50 indigo-gradient flex flex-col items-center justify-center p-6 transition-opacity duration-700">
+        <div class="relative mb-8" data-aos="zoom-in" data-aos-duration="1000">
+            <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-full gold-gradient flex items-center justify-center text-indigoTheme-950 shadow-2xl border-4 border-goldTheme/50 animate-pulse">
+                <span class="font-serif font-bold text-xl sm:text-2xl text-center">HIM</span>
+            </div>
+            <div class="absolute -inset-2 rounded-full border border-goldTheme/30 animate-ping opacity-75 pointer-events-none"></div>
+        </div>
+        <div class="text-center space-y-3 max-w-md" data-aos="fade-up" data-aos-delay="200">
+            <span class="px-4 py-1.5 rounded-full bg-indigoTheme-900/90 border border-goldTheme/40 text-goldTheme font-semibold text-xs tracking-widest uppercase">
+                Heartfelt International Ministries
+            </span>
+                <h1 class="font-serif text-3xl sm:text-4xl font-bold tracking-wide text-white">
+                    HIM <span class="gold-text-gradient">Online viewers registration</span>
+                </h1>
+            <p class="text-sm sm:text-base text-indigoTheme-200 font-medium">One-Church • Many-Locations Mandate</p>
+            <div class="pt-6">
+                <button onclick="dismissSplash()" class="gold-gradient text-indigoTheme-950 font-bold px-8 py-3.5 rounded-2xl shadow-xl hover:scale-105 transition transform duration-200 text-sm tracking-wide">
+                    <i class="fa-solid fa-fire mr-2"></i> ENTER PORTAL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-indigoTheme-950/90 border-b border-goldTheme/30 text-white sticky top-0 z-40 backdrop-blur-md shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('register')">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full gold-gradient flex items-center justify-center text-indigoTheme-950 font-bold text-sm sm:text-base shadow-md border border-goldTheme/50">
+                    <span class="font-serif font-bold text-center">HIM</span>
+                </div>
+                <div>
+                    <h1 class="font-serif text-base sm:text-xl font-bold tracking-wide gold-text-gradient">HIM Online viewers registration</h1>
+                    <p class="text-[10px] sm:text-xs text-indigoTheme-200 uppercase tracking-widest font-medium">Heartfelt Ministries</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button onclick="switchTab('register')" id="navRegisterBtn" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold gold-gradient text-indigoTheme-950 shadow transition transform hover:scale-105">
+                    <i class="fa-solid fa-pen-to-square mr-1.5"></i> Register Centre
+                </button>
+                <button onclick="switchTab('admin')" id="navAdminBtn" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigoTheme-900 border border-goldTheme/50 text-goldTheme hover:bg-indigoTheme-800 transition">
+                    <i class="fa-solid fa-lock mr-1.5"></i> Admin Portal
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+
+        <!-- SECTION: REGISTER VIEWING CENTRE -->
+        <div id="registerSection" class="space-y-8">
+            <!-- Hero Banner with Background Image -->
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-goldTheme/40 indigo-gradient p-6 sm:p-12 text-center" data-aos="fade-up">
+                <div class="absolute inset-0 opacity-25 bg-cover bg-center mix-blend-overlay" style="background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=1200');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-indigoTheme-950 via-indigoTheme-900/80 to-transparent"></div>
+
+                <div class="relative z-10 max-w-2xl mx-auto space-y-4">
+                    <span class="inline-block py-1 px-4 rounded-full bg-indigoTheme-900/90 border border-goldTheme/40 text-goldTheme font-semibold text-xs tracking-wider uppercase">
+                        <i class="fa-solid fa-church mr-1"></i> One-Church • Many-Locations
+                    </span>
+                    <h2 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+                        Viewing Centre <span class="gold-text-gradient">Registration</span>
+                    </h2>
+                    <p class="text-indigoTheme-200 text-sm sm:text-base">
+                        Fill in your viewing centre details below to register and instantly generate your WhatsApp submission for our regional lines.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Registration Form Card -->
+            <div class="glass-card border border-goldTheme/30 rounded-3xl p-6 sm:p-10 shadow-2xl" data-aos="fade-up" data-aos-delay="100">
+                <div class="flex items-center justify-between mb-8 pb-4 border-b border-indigoTheme-800">
+                    <div>
+                        <h3 class="font-serif text-xl sm:text-2xl font-bold text-white">Centre Information Form</h3>
+                        <p class="text-xs sm:text-sm text-indigoTheme-300 mt-1">Please provide accurate details as requested by the mandate.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl gold-gradient flex items-center justify-center text-indigoTheme-950 text-sm font-bold shadow">
+                        <span class="font-serif font-bold text-center">HIM</span>
+                    </div>
+                </div>
+
+                <form id="registrationForm" onsubmit="submitRegistration(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-goldTheme mb-2">1. Centre Category *</label>
+                        <select id="centreCategory" required class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-goldTheme transition">
+                            <option value="" disabled selected>-- Select Centre Category --</option>
+                            <option value="Family Viewing Centre">1. Family Viewing Centre</option>
+                            <option value="Homegroup Viewing Centre">2. Homegroup Viewing Centre</option>
+                            <option value="Zonal Viewing Centre">3. Zonal Viewing Centre</option>
+                            <option value="College Viewing Centre">4. College Viewing Centre</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-goldTheme mb-2">2. Centre Name *</label>
+                        <input type="text" id="centreName" required placeholder="e.g. Grace Flame Centre / Smith Family" class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-3.5 text-white placeholder-indigoTheme-400/50 focus:outline-none focus:border-goldTheme transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-goldTheme mb-2">3. Country, Town/City/Village *</label>
+                        <input type="text" id="centreLocation" required placeholder="e.g. Zimbabwe, Harare" class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-3.5 text-white placeholder-indigoTheme-400/50 focus:outline-none focus:border-goldTheme transition">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-goldTheme mb-2">4. Number of people who gather *</label>
+                            <input type="number" min="1" id="totalPeople" required placeholder="e.g. 15" class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-3.5 text-white placeholder-indigoTheme-400/50 focus:outline-none focus:border-goldTheme transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-goldTheme mb-2">5. Leader WhatsApp Contact *</label>
+                            <input type="text" id="contactNumber" required placeholder="e.g. +263770000000" class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-3.5 text-white placeholder-indigoTheme-400/50 focus:outline-none focus:border-goldTheme transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-goldTheme mb-2">6. Genders, Adults, Children breakdown *</label>
+                        <textarea id="breakdownDetails" rows="3" required placeholder="e.g. 7 Males, 8 Females, 10 Adults, 5 Children" class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-3.5 text-white placeholder-indigoTheme-400/50 focus:outline-none focus:border-goldTheme transition"></textarea>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="w-full gold-gradient text-indigoTheme-950 font-bold py-4 rounded-xl shadow-xl hover:opacity-95 transition transform hover:-translate-y-0.5 text-center text-base">
+                            <i class="fa-solid fa-paper-plane mr-2"></i> Submit Registration
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Generated Output Preview -->
+                <div id="outputContainer" class="hidden mt-8 pt-8 border-t border-indigoTheme-800 space-y-4">
+                    <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center space-x-3">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+                        <div>
+                            <h4 class="font-serif text-lg font-bold text-emerald-300">Registration Successful!</h4>
+                            <p class="text-sm text-indigoTheme-200">Your viewing centre details have been saved successfully.</p>
+                        </div>
+                    </div>
+                    <div class="bg-indigoTheme-950 border border-goldTheme/40 rounded-xl p-4 text-indigoTheme-100 font-mono text-sm whitespace-pre-line select-all" id="formattedMessage">
+                    </div>
+                    <div>
+                        <button onclick="resetForm()" class="w-full bg-indigoTheme-800 hover:bg-indigoTheme-700 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center shadow text-center">
+                            <i class="fa-solid fa-plus mr-2"></i> Register Another Centre
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: ADMIN LOGIN -->
+        <div id="adminLoginSection" class="hidden space-y-8" data-aos="fade-in">
+            <div class="max-w-md mx-auto">
+                <div class="glass-card border border-goldTheme/30 rounded-3xl p-8 sm:p-10 shadow-2xl">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full gold-gradient flex items-center justify-center text-indigoTheme-950 text-sm font-bold shadow">
+                            <span class="font-serif font-bold text-center">HIM</span>
+                        </div>
+                        <h2 class="font-serif text-2xl font-bold text-white">Admin Authentication</h2>
+                        <p class="text-sm text-indigoTheme-300 mt-2">Enter your authorized email to access the admin portal.</p>
+                    </div>
+
+                    <form onsubmit="adminLogin(event)" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-goldTheme mb-2">Email Address *</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-indigoTheme-400">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </span>
+                                <input type="email" id="adminEmail" required placeholder="your.email@gmail.com" class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl pl-11 pr-4 py-3.5 text-white placeholder-indigoTheme-400/50 focus:outline-none focus:border-goldTheme transition">
+                            </div>
+                        </div>
+
+                        <div id="loginError" class="hidden bg-red-500/20 border border-red-500/40 text-red-300 px-4 py-3 rounded-xl text-sm flex items-center">
+                            <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                            <span id="loginErrorMessage">Access denied. Unauthorized email.</span>
+                        </div>
+
+                        <button type="submit" class="w-full gold-gradient text-indigoTheme-950 font-bold py-4 rounded-xl shadow-xl hover:opacity-95 transition transform hover:-translate-y-0.5 text-center text-base">
+                            <i class="fa-solid fa-lock-open mr-2"></i> Authenticate & Access
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-6 border-t border-indigoTheme-800 text-center">
+                        <button onclick="switchTab('register')" class="text-indigoTheme-300 hover:text-goldTheme text-sm transition">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Back to Registration
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: ADMIN PORTAL -->
+        <div id="adminSection" class="hidden space-y-8" data-aos="fade-in">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-indigoTheme-900 border border-goldTheme/40 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                <div>
+                    <span class="px-3 py-1 rounded-full bg-indigoTheme-950 border border-goldTheme/30 text-goldTheme font-semibold text-xs uppercase tracking-wider">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> Management Dashboard
+                    </span>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-2">HIM Online viewers registration</h2>
+                    <p class="text-indigoTheme-200 text-sm mt-1">Logged in as: <span id="loggedInEmail" class="text-goldTheme font-medium"></span></p>
+                </div>
+                <div class="flex items-center space-x-3 w-full sm:w-auto">
+                    <button onclick="exportData()" class="flex-1 sm:flex-none bg-indigoTheme-950 border border-goldTheme text-goldTheme px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-goldTheme hover:text-indigoTheme-950 transition">
+                        <i class="fa-solid fa-download mr-1.5"></i> Export CSV
+                    </button>
+                    <button onclick="clearAllData()" class="flex-1 sm:flex-none bg-orange-600/80 hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition">
+                        <i class="fa-solid fa-trash mr-1.5"></i> Clear All
+                    </button>
+                    <button onclick="adminLogout()" class="flex-1 sm:flex-none bg-red-600/80 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition">
+                        <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Overview Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="glass-card border border-indigoTheme-800 rounded-2xl p-6 shadow-xl flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-2xl gold-gradient text-indigoTheme-950 flex items-center justify-center text-sm font-bold shadow">
+                        <span class="font-serif font-bold text-center">HIM</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-indigoTheme-300 uppercase font-semibold">Total Centres</p>
+                        <h3 class="text-3xl font-bold text-white mt-1" id="statTotalCentres">0</h3>
+                    </div>
+                </div>
+
+                <div class="glass-card border border-indigoTheme-800 rounded-2xl p-6 shadow-xl flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-2xl gold-gradient text-indigoTheme-950 flex items-center justify-center text-sm font-bold shadow">
+                        <span class="font-serif font-bold text-center">HIM</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-indigoTheme-300 uppercase font-semibold">Total Attendees</p>
+                        <h3 class="text-3xl font-bold text-white mt-1" id="statTotalAttendees">0</h3>
+                    </div>
+                </div>
+
+                <div class="glass-card border border-indigoTheme-800 rounded-2xl p-6 shadow-xl flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-2xl gold-gradient text-indigoTheme-950 flex items-center justify-center text-sm font-bold shadow">
+                        <span class="font-serif font-bold text-center">HIM</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-indigoTheme-300 uppercase font-semibold">Categories Active</p>
+                        <h3 class="text-3xl font-bold text-white mt-1" id="statCategories">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registrations Table / List -->
+            <div class="glass-card border border-goldTheme/30 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden">
+                <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+                    <h3 class="font-serif text-xl font-bold text-white">Registered Centres Feed</h3>
+                    <div class="w-full sm:w-72">
+                        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search by name, location..." class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-indigoTheme-400 focus:outline-none focus:border-goldTheme">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-indigoTheme-800 text-goldTheme text-xs uppercase tracking-wider font-semibold">
+                                <th class="py-3 px-4">Category & Name</th>
+                                <th class="py-3 px-4">Location</th>
+                                <th class="py-3 px-4">Attendees</th>
+                                <th class="py-3 px-4">Contact</th>
+                                <th class="py-3 px-4">Breakdown</th>
+                                <th class="py-3 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="divide-y divide-indigoTheme-900 text-sm">
+                            <!-- Populated via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="emptyState" class="hidden text-center py-12 text-indigoTheme-400">
+                    <i class="fa-solid fa-folder-open text-4xl mb-3 text-goldTheme/50"></i>
+                    <p>No viewing centres registered yet.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-indigoTheme-950 text-white border-t border-goldTheme/20 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+            <div class="flex items-center justify-center space-x-2">
+                <div class="w-7 h-7 rounded-full gold-gradient flex items-center justify-center text-indigoTheme-950 font-bold text-xs">
+                    <span class="font-serif font-bold text-center">HIM</span>
+                </div>
+                <span class="font-serif font-bold text-base gold-text-gradient">Heartfelt International Ministries</span>
+            </div>
+            <p class="text-xs text-indigoTheme-300">One-Church-Many-Locations Mandate • HIM Online viewers registration</p>
+            <p class="text-[10px] text-indigoTheme-400">&copy; 2026 All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Authorized admin emails
+        const AUTHORIZED_ADMINS = [
+            'holyhappy@gmail.com',
+            'tmawaro25@gmail.com',
+            'donaldmaminimini@gmail.com'
+        ];
+
+        // Initialize AOS animations
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 800, once: true });
+            checkAdminSession();
+            loadRegistrations();
+        });
+
+        // Splash Screen Dismissal
+        function dismissSplash() {
+            const splash = document.getElementById('splashScreen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 700);
+        }
+
+        // Tab Switching Logic
+        function switchTab(tab) {
+            const registerSec = document.getElementById('registerSection');
+            const adminSec = document.getElementById('adminSection');
+            const adminLoginSec = document.getElementById('adminLoginSection');
+            const navRegBtn = document.getElementById('navRegisterBtn');
+            const navAdmBtn = document.getElementById('navAdminBtn');
+
+            if (tab === 'register') {
+                registerSec.classList.remove('hidden');
+                adminSec.classList.add('hidden');
+                adminLoginSec.classList.add('hidden');
+                navRegBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold gold-gradient text-indigoTheme-950 shadow transition transform hover:scale-105";
+                navAdmBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigoTheme-900 border border-goldTheme/50 text-goldTheme hover:bg-indigoTheme-800 transition";
+            } else if (tab === 'admin') {
+                // Check if already authenticated
+                const isAuthenticated = sessionStorage.getItem('him_admin_auth') === 'true';
+                if (isAuthenticated) {
+                    registerSec.classList.add('hidden');
+                    adminSec.classList.remove('hidden');
+                    adminLoginSec.classList.add('hidden');
+                    navAdmBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold gold-gradient text-indigoTheme-950 shadow transition transform hover:scale-105";
+                    navRegBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigoTheme-900 border border-goldTheme/50 text-goldTheme hover:bg-indigoTheme-800 transition";
+                    loadRegistrations();
+                } else {
+                    // Show login form
+                    registerSec.classList.add('hidden');
+                    adminSec.classList.add('hidden');
+                    adminLoginSec.classList.remove('hidden');
+                    navAdmBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold gold-gradient text-indigoTheme-950 shadow transition transform hover:scale-105";
+                    navRegBtn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigoTheme-900 border border-goldTheme/50 text-goldTheme hover:bg-indigoTheme-800 transition";
+                }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Admin Login
+        function adminLogin(event) {
+            event.preventDefault();
+            const emailInput = document.getElementById('adminEmail');
+            const email = emailInput.value.trim().toLowerCase();
+            const errorDiv = document.getElementById('loginError');
+            const errorMessage = document.getElementById('loginErrorMessage');
+
+            // Check if email is in authorized list
+            if (AUTHORIZED_ADMINS.includes(email)) {
+                // Successful authentication
+                sessionStorage.setItem('him_admin_auth', 'true');
+                sessionStorage.setItem('him_admin_email', email);
+                errorDiv.classList.add('hidden');
+                emailInput.value = '';
+                showToast('Access granted. Welcome, Admin!');
+                loadRegistrations();
+                switchTab('admin');
+            } else {
+                // Failed authentication
+                errorDiv.classList.remove('hidden');
+                errorMessage.textContent = 'Access denied. This email is not authorized.';
+                emailInput.value = '';
+                emailInput.focus();
+            }
+        }
+
+        // Admin Logout
+        function adminLogout() {
+            sessionStorage.removeItem('him_admin_auth');
+            sessionStorage.removeItem('him_admin_email');
+            showToast('Logged out successfully.');
+            switchTab('register');
+        }
+
+        // Check existing admin session
+        function checkAdminSession() {
+            const isAuthenticated = sessionStorage.getItem('him_admin_auth') === 'true';
+            const email = sessionStorage.getItem('him_admin_email');
+            if (isAuthenticated && email) {
+                document.getElementById('loggedInEmail').textContent = email;
+            }
+        }
+
+        // Local Storage State Management
+        function getStoredRegistrations() {
+            try {
+                const data = localStorage.getItem('him_flame_registrations');
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                console.error('Error reading from localStorage:', e);
+                return [];
+            }
+        }
+
+        function saveRegistrations(regs) {
+            try {
+                localStorage.setItem('him_flame_registrations', JSON.stringify(regs));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                showToast('Error saving data. Storage may be full.');
+            }
+        }
+
+        // Submit Registration Form
+        function submitRegistration(event) {
+            event.preventDefault();
+
+            const category = document.getElementById('centreCategory').value;
+            const name = document.getElementById('centreName').value.trim();
+            const location = document.getElementById('centreLocation').value.trim();
+            const total = document.getElementById('totalPeople').value.trim();
+            const contact = document.getElementById('contactNumber').value.trim();
+            const breakdown = document.getElementById('breakdownDetails').value.trim();
+
+            const newReg = {
+                id: Date.now().toString(),
+                date: new Date().toLocaleDateString(),
+                category,
+                name,
+                location,
+                total: parseInt(total) || 0,
+                contact,
+                breakdown
+            };
+
+            // Save to LocalStorage
+            const regs = getStoredRegistrations();
+            regs.unshift(newReg);
+            saveRegistrations(regs);
+
+            // Generate WhatsApp Formatted Message
+            const message = `*HIM VIEWING CENTRE REGISTRATION*\n\n1. Centre Category: *${category}*\n2. Centre Name: *${name}*\n3. Country, Town/City/Village: *${location}*\n4. Number of people who gather at the Centre: *${total}*\n5. Genders, Adults, Children: *${breakdown}*\nContact Number: *${contact}*\n\n*One-Church-Many-Locations!*`;
+
+            document.getElementById('formattedMessage').innerText = message;
+            document.getElementById('outputContainer').classList.remove('hidden');
+
+            showToast('Viewing Centre successfully registered!');
+            document.getElementById('outputContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Reset form to allow another registration
+        function resetForm() {
+            document.getElementById('outputContainer').classList.add('hidden');
+            document.getElementById('registrationForm').reset();
+            document.getElementById('centreCategory').selectedIndex = 0;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Load Registrations in Admin Portal
+        function loadRegistrations() {
+            // Display logged-in email
+            const email = sessionStorage.getItem('him_admin_email');
+            if (email) {
+                document.getElementById('loggedInEmail').textContent = email;
+            }
+
+            const regs = getStoredRegistrations();
+            const tbody = document.getElementById('adminTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            // Update stats
+            document.getElementById('statTotalCentres').innerText = regs.length;
+            const totalAttendees = regs.reduce((sum, r) => sum + (parseInt(r.total) || 0), 0);
+            document.getElementById('statTotalAttendees').innerText = totalAttendees;
+
+            // Calculate unique categories
+            const uniqueCategories = [...new Set(regs.map(r => r.category))].length;
+            document.getElementById('statCategories').innerText = uniqueCategories;
+
+            tbody.innerHTML = '';
+            if (regs.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            regs.forEach((reg) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-indigoTheme-900/50 transition border-b border-indigoTheme-900";
+                tr.innerHTML = `
+                    <td class="py-4 px-4">
+                        <div class="font-bold text-white">${escapeHtml(reg.name)}</div>
+                        <span class="text-xs text-goldTheme bg-goldTheme/10 px-2 py-0.5 rounded-full inline-block mt-1">${escapeHtml(reg.category)}</span>
+                    </td>
+                    <td class="py-4 px-4 text-indigoTheme-200">${escapeHtml(reg.location)}</td>
+                    <td class="py-4 px-4">
+                        <span class="font-semibold text-white bg-indigoTheme-800 px-2.5 py-1 rounded-lg">${reg.total} people</span>
+                    </td>
+                    <td class="py-4 px-4 text-indigoTheme-200 font-mono text-xs">${escapeHtml(reg.contact)}</td>
+                    <td class="py-4 px-4 text-xs text-indigoTheme-300 max-w-xs truncate">${escapeHtml(reg.breakdown)}</td>
+                    <td class="py-4 px-4 text-right space-x-2">
+                        <button onclick="sendWhatsAppDirect('${escapeHtml(reg.contact)}')" class="p-2 bg-emerald-600/80 hover:bg-emerald-600 text-white rounded-lg transition" title="Message Leader">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </button>
+                        <button onclick="deleteRegistration('${reg.id}')" class="p-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg transition" title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Delete Individual Registration
+        function deleteRegistration(id) {
+            if (!confirm('Are you sure you want to delete this viewing centre record?')) return;
+            let regs = getStoredRegistrations();
+            regs = regs.filter(r => r.id !== id);
+            saveRegistrations(regs);
+            loadRegistrations();
+            showToast('Viewing centre record deleted.');
+        }
+
+        // Clear All Data
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all registered viewing centres?')) {
+                localStorage.removeItem('him_flame_registrations');
+                loadRegistrations();
+                showToast('All records cleared.');
+            }
+        }
+
+        // Export Data as CSV
+        function exportData() {
+            const regs = getStoredRegistrations();
+            if (regs.length === 0) {
+                showToast('No data available to export.');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,ID,Date,Category,Name,Location,TotalPeople,Contact,Breakdown\n";
+            regs.forEach(r => {
+                csvContent += `"${r.id}","${r.date}","${escapeCsv(r.category)}","${escapeCsv(r.name)}","${escapeCsv(r.location)}",${r.total},"${escapeCsv(r.contact)}","${escapeCsv(r.breakdown)}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "him_flame_viewing_centres.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('CSV export successful!');
+        }
+
+        // Filter Table in Admin
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const regs = getStoredRegistrations();
+            const filtered = regs.filter(r =>
+                r.name.toLowerCase().includes(query) ||
+                r.location.toLowerCase().includes(query) ||
+                r.category.toLowerCase().includes(query)
+            );
+
+            const tbody = document.getElementById('adminTableBody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            filtered.forEach((reg) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-indigoTheme-900/50 transition border-b border-indigoTheme-900";
+                tr.innerHTML = `
+                    <td class="py-4 px-4">
+                        <div class="font-bold text-white">${escapeHtml(reg.name)}</div>
+                        <span class="text-xs text-goldTheme bg-goldTheme/10 px-2 py-0.5 rounded-full inline-block mt-1">${escapeHtml(reg.category)}</span>
+                    </td>
+                    <td class="py-4 px-4 text-indigoTheme-200">${escapeHtml(reg.location)}</td>
+                    <td class="py-4 px-4">
+                        <span class="font-semibold text-white bg-indigoTheme-800 px-2.5 py-1 rounded-lg">${reg.total} people</span>
+                    </td>
+                    <td class="py-4 px-4 text-indigoTheme-200 font-mono text-xs">${escapeHtml(reg.contact)}</td>
+                    <td class="py-4 px-4 text-xs text-indigoTheme-300 max-w-xs truncate">${escapeHtml(reg.breakdown)}</td>
+                    <td class="py-4 px-4 text-right space-x-2">
+                        <button onclick="sendWhatsAppDirect('${escapeHtml(reg.contact)}')" class="p-2 bg-emerald-600/80 hover:bg-emerald-600 text-white rounded-lg transition" title="Message Leader">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </button>
+                        <button onclick="deleteRegistration('${reg.id}')" class="p-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg transition" title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // WhatsApp direct message helper
+        function sendWhatsAppDirect(phone) {
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            window.open(`https://wa.me/${cleanPhone}?text=Hello%20from%20HIM%20Flame%20Admin%20regarding%20your%20Viewing%20Centre.`, '_blank');
+        }
+
+        // Copy message to clipboard
+        async function copyToClipboard() {
+            const textToCopy = document.getElementById('formattedMessage').innerText;
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                showToast('Registration message copied to clipboard!');
+            } catch (err) {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Registration message copied to clipboard!');
+                } catch (e) {
+                    showToast('Unable to copy. Please select text manually.');
+                }
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // Toast Notification Banner
+        function showToast(message) {
+            const existing = document.getElementById('toastNotification');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'toastNotification';
+            toast.className = 'fixed bottom-5 right-5 z-50 gold-gradient text-indigoTheme-950 font-bold px-6 py-3.5 rounded-2xl shadow-2xl flex items-center space-x-2 transition transform duration-300 animate-bounce';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-lg"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // Utility: Escape HTML to prevent XSS
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Utility: Escape CSV fields
+        function escapeCsv(str) {
+            return str.replace(/"/g, '""');
+        }
+    </script>
+</body>
+</html>
