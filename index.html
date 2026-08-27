@@ -382,9 +382,22 @@
         // Initialize AOS animations
         document.addEventListener('DOMContentLoaded', () => {
             AOS.init({ duration: 800, once: true });
+            clearDummyData();
             checkAdminSession();
             loadRegistrations();
         });
+
+        // Remove any placeholder or dummy data from localStorage
+        function clearDummyData() {
+            const regs = getStoredRegistrations();
+            const cleaned = regs.filter(r => {
+                const isPlaceholder = !r.name || !r.location || !r.contact || r.name.toLowerCase().includes('test') || r.name.toLowerCase().includes('dummy') || r.name.toLowerCase().includes('placeholder');
+                return !isPlaceholder;
+            });
+            if (cleaned.length !== regs.length) {
+                saveRegistrations(cleaned);
+            }
+        }
 
         // Splash Screen Dismissal
         function dismissSplash() {
@@ -530,6 +543,11 @@
 
             showToast('Viewing Centre successfully registered!');
             document.getElementById('outputContainer').scrollIntoView({ behavior: 'smooth' });
+
+            // Auto-reset form after 2 seconds so user can submit another registration
+            setTimeout(() => {
+                resetForm();
+            }, 2000);
         }
 
         // Reset form to allow another registration
