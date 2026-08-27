@@ -164,7 +164,7 @@
                     </div>
                 </div>
 
-                <form id="registrationForm" onsubmit="submitRegistration(event)" class="space-y-6">
+                <form id="registrationForm" onsubmit="submitRegistration(event); return false;" class="space-y-6">
                     <div>
                         <label class="block text-sm font-semibold text-goldTheme mb-2">1. Centre Category *</label>
                         <select id="centreCategory" required class="w-full bg-indigoTheme-950 border border-indigoTheme-700 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-goldTheme transition">
@@ -208,7 +208,7 @@
                     </div>
 
                     <div class="pt-4">
-                        <button type="submit" class="w-full gold-gradient text-indigoTheme-950 font-bold py-4 rounded-xl shadow-xl hover:opacity-95 transition transform hover:-translate-y-0.5 text-center text-base">
+                        <button type="submit" id="submitBtn" onclick="submitRegistration(event)" class="w-full gold-gradient text-indigoTheme-950 font-bold py-4 rounded-xl shadow-xl hover:opacity-95 transition transform hover:-translate-y-0.5 text-center text-base">
                             <i class="fa-solid fa-paper-plane mr-2"></i> Submit Registration
                         </button>
                     </div>
@@ -530,8 +530,15 @@
         // Supabase client initialization
         const SUPABASE_URL = 'https://bppwrpxmlglfkhcjzicn.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_GgKxsbGu_N9_wJ7umrgq8Q_ZQiww7tD';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const SUPABASE_TABLE = 'Viwers';
+        let supabase = null;
+        if (window.supabase && window.supabase.createClient) {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (e) {
+                console.error('Supabase init error:', e);
+            }
+        }
 
         function encrypt(text) {
             let result = '';
@@ -578,66 +585,85 @@
 
         // Submit Registration Form
         function submitRegistration(event) {
-            event.preventDefault();
+            try {
+                event.preventDefault();
+                console.log('submitRegistration called');
 
-            const category = document.getElementById('centreCategory').value;
-            const name = document.getElementById('centreName').value.trim();
-            const location = document.getElementById('centreLocation').value.trim();
-            const total = document.getElementById('totalPeople').value.trim();
-            const contact = document.getElementById('contactNumber').value.trim();
-            const breakdown = document.getElementById('breakdownDetails').value.trim();
-            const prayerExpectations = document.getElementById('prayerExpectations').value.trim();
+                const category = document.getElementById('centreCategory').value;
+                const name = document.getElementById('centreName').value.trim();
+                const location = document.getElementById('centreLocation').value.trim();
+                const total = document.getElementById('totalPeople').value.trim();
+                const contact = document.getElementById('contactNumber').value.trim();
+                const breakdown = document.getElementById('breakdownDetails').value.trim();
+                const prayerExpectations = document.getElementById('prayerExpectations').value.trim();
+                console.log('Form values:', { category, name, location, total, contact, breakdown, prayerExpectations });
 
-            const newReg = {
-                id: Date.now().toString(),
-                date: new Date().toLocaleDateString(),
-                category,
-                name,
-                location,
-                total: parseInt(total) || 0,
-                contact,
-                breakdown,
-                prayerExpectations
-            };
+                const newReg = {
+                    id: Date.now().toString(),
+                    date: new Date().toLocaleDateString(),
+                    category,
+                    name,
+                    location,
+                    total: parseInt(total) || 0,
+                    contact,
+                    breakdown,
+                    prayerExpectations
+                };
 
-            // Save to LocalStorage
-            const regs = getStoredRegistrations();
-            regs.unshift(newReg);
-            saveRegistrations(regs);
+                // Save to LocalStorage
+                const regs = getStoredRegistrations();
+                regs.unshift(newReg);
+                saveRegistrations(regs);
 
-            // Save to Supabase
-            const supabasePayload = {
-                id: newReg.id,
-                date: newReg.date,
-                category: newReg.category,
-                name: newReg.name,
-                location: newReg.location,
-                total: newReg.total,
-                contact: newReg.contact,
-                breakdown: newReg.breakdown,
-                prayer_expectations: newReg.prayerExpectations || ''
-            };
+                // Save to Supabase
+                const supabasePayload = {
+                    id: newReg.id,
+                    date: newReg.date,
+                    category: newReg.category,
+                    name: newReg.name,
+                    location: newReg.location,
+                    total: newReg.total,
+                    contact: newReg.contact,
+                    breakdown: newReg.breakdown,
+                    prayer_expectations: newReg.prayerExpectations || ''
+                };
 
-            supabase.from(SUPABASE_TABLE).insert([supabasePayload]).then(({ error }) => {
-                if (error) {
-                    console.error('Supabase insert error:', error);
-                    showToast('Saved locally. Sync to cloud failed.');
+                console.log('Supabase client:', supabase ? 'available' : 'unavailable');
+                if (supabase) {
+                    supabase.from(SUPABASE_TABLE).insert([supabasePayload]).then(({ error }) => {
+                        if (error) {
+                            console.error('Supabase insert error:', error);
+                            showToast('Saved locally. Sync to cloud failed.');
+                        } else {
+                            console.log('Supabase insert success');
+                            showToast('Saved to cloud successfully!');
+                        }
+                    }).catch(err => {
+                        console.error('Supabase insert exception:', err);
+                        showToast('Saved locally. Cloud sync exception.');
+                    });
+                } else {
+                    console.warn('Supabase not initialized. Data saved locally only.');
+                    showToast('Saved locally. Cloud not connected.');
                 }
-            });
 
-            // Generate WhatsApp Formatted Message
-            const message = `*HIM VIEWING CENTRE REGISTRATION*\n\n1. Centre Category: *${category}*\n2. Centre Name: *${name}*\n3. Country, Town/City/Village: *${location}*\n4. Number of people who gather at the Centre: *${total}*\n5. Genders, Adults, Children: *${breakdown}*\n6. My Prayer Expectations: *${prayerExpectations}*\nContact Number: *${contact}*\n\n*One-Church-Many-Locations!*`;
+                // Generate WhatsApp Formatted Message
+                const message = `*HIM VIEWING CENTRE REGISTRATION*\n\n1. Centre Category: *${category}*\n2. Centre Name: *${name}*\n3. Country, Town/City/Village: *${location}*\n4. Number of people who gather at the Centre: *${total}*\n5. Genders, Adults, Children: *${breakdown}*\n6. My Prayer Expectations: *${prayerExpectations}*\nContact Number: *${contact}*\n\n*One-Church-Many-Locations!*`;
 
-            document.getElementById('formattedMessage').innerText = message;
-            document.getElementById('outputContainer').classList.remove('hidden');
+                document.getElementById('formattedMessage').innerText = message;
+                document.getElementById('outputContainer').classList.remove('hidden');
 
-            showToast('Viewing Centre successfully registered!');
-            document.getElementById('outputContainer').scrollIntoView({ behavior: 'smooth' });
+                showToast('Viewing Centre successfully registered!');
+                document.getElementById('outputContainer').scrollIntoView({ behavior: 'smooth' });
 
-            // Auto-reset form after 2 seconds so user can submit another registration
-            setTimeout(() => {
-                resetForm();
-            }, 2000);
+                // Auto-reset form after 2 seconds so user can submit another registration
+                setTimeout(() => {
+                    resetForm();
+                }, 2000);
+            } catch (err) {
+                console.error('submitRegistration error:', err);
+                showToast('An error occurred. Please try again.');
+            }
         }
 
         // Reset form to allow another registration
