@@ -1,7 +1,18 @@
 const { Client } = require('pg');
 
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://bppwrpxmlglfkhcjzicn.supabase.co';
+const SUPABASE_DB_PASSWORD = process.env.SUPABASE_DB_PASSWORD;
+
+if (!SUPABASE_DB_PASSWORD) {
+  console.error('Error: SUPABASE_DB_PASSWORD environment variable is required');
+  console.error('Set it with: $env:SUPABASE_DB_PASSWORD="your-db-password"');
+  process.exit(1);
+}
+
+const connectionString = `postgresql://postgres:${encodeURIComponent(SUPABASE_DB_PASSWORD)}@db.bppwrpxmlglfkhcjzicn.supabase.co:5432/postgres`;
+
 const client = new Client({
-  connectionString: 'postgresql://postgres:CgbYQVEHcvrn84t3@db.bppwrpxmlglfkhcjzicn.supabase.co:5432/postgres',
+  connectionString,
   ssl: { rejectUnauthorized: false }
 });
 
