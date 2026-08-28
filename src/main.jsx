@@ -63,7 +63,11 @@ function App() {
   const loadRegistrations = async () => {
     const { data, error } = await supabase.from('Viwers').select('*').order('id', { ascending: false });
     const local = readLocal();
-    if (error) { setRegistrations(local); notify('Unable to load cloud data. Showing local data.'); } else setRegistrations(data || local);
+    if (error) {
+      console.error('Supabase load error:', error);
+      setRegistrations(local);
+      notify('Unable to load cloud data. Showing local data.');
+    } else setRegistrations(data || local);
   };
   useEffect(() => { const cleaned = readLocal().filter((item) => item.name && item.location && item.contact && !/test|dummy|placeholder/i.test(item.name)); writeLocal(cleaned); }, []);
   useEffect(() => { if (view === 'admin') loadRegistrations(); }, [view]);
@@ -72,9 +76,18 @@ function App() {
     event.preventDefault();
     const registration = { id: Date.now().toString(), date: new Date().toLocaleDateString(), ...form, total: Number(form.total) || 0 };
     const local = [registration, ...readLocal()];
-    writeLocal(local); setSaved(registration); setForm({ category: '', name: '', location: '', total: '', contact: '', breakdown: '', prayerExpectations: '' }); notify('Viewing Centre successfully registered!');
-    const { error } = await supabase.from('Viwers').insert([{ ...registration, prayer_expectations: registration.prayerExpectations }]);
-    if (error) notify('Saved locally. Cloud sync failed.');
+    writeLocal(local);
+    setSaved(registration);
+    setForm({ category: '', name: '', location: '', total: '', contact: '', breakdown: '', prayerExpectations: '' });
+    notify('Viewing Centre successfully registered!');
+    const { data, error } = await supabase.from('Viwers').insert([{ ...registration, prayer_expectations: registration.prayerExpectations }]);
+    if (error) {
+      console.error('Supabase insert error:', error);
+      notify('Saved locally. Cloud sync failed: ' + (error.message || 'Unknown error'));
+    } else {
+      console.log('Cloud sync success:', data);
+      notify('Viewing Centre registered and synced to cloud!');
+    }
   };
   const login = (event) => { event.preventDefault(); const normalized = loginEmail.trim().toLowerCase(); if (!AUTHORIZED_ADMINS.includes(normalized)) { setLoginError('Access denied. This email is not authorized.'); return; } sessionStorage.setItem(AUTH_KEY, 'true'); sessionStorage.setItem(EMAIL_KEY, normalized); setEmail(normalized); setLoginError(''); setLoginEmail(''); notify('Access granted. Welcome, Admin!'); setView('admin'); };
   const logout = () => { sessionStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(EMAIL_KEY); setEmail(''); setSplash(true); setView('register'); notify('Logged out successfully.'); };
