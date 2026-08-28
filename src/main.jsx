@@ -8,7 +8,9 @@ const AUTH_KEY = 'him_admin_auth';
 const EMAIL_KEY = 'him_admin_email';
 const ENCRYPTION_KEY = 'H1M-Fl@m3-2026-S3cur3';
 const AUTHORIZED_ADMINS = ['holyhappy@gmail.com', 'tmawaro25@gmail.com', 'donaldmaminimini@gmail.com'];
-const supabase = createClient('https://bppwrpxmlglfkhcjzicn.supabase.co', 'sb_publishable_GgKxsbGu_N9_wJ7umrgq8Q_ZQiww7tD');
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://bppwrpxmlglfkhcjzicn.supabase.co';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_GgKxsbGu_N9_wJ7umrgq8Q_ZQiww7tD';
+const supabase = createClient(supabaseUrl, supabaseKey);
 const categories = ['Family Viewing Centre', 'Homegroup Viewing Centre', 'Zonal Viewing Centre', 'College Viewing Centre'];
 
 function encrypt(text) { return btoa([...text].map((char, index) => String.fromCharCode(char.charCodeAt(0) ^ ENCRYPTION_KEY.charCodeAt(index % ENCRYPTION_KEY.length))).join('')); }
@@ -80,7 +82,18 @@ function App() {
     setSaved(registration);
     setForm({ category: '', name: '', location: '', total: '', contact: '', breakdown: '', prayerExpectations: '' });
     notify('Viewing Centre successfully registered!');
-    const { data, error } = await supabase.from('Viwers').insert([{ ...registration, prayer_expectations: registration.prayerExpectations }]);
+    const cloudRecord = {
+      id: registration.id,
+      date: registration.date,
+      category: registration.category,
+      name: registration.name,
+      location: registration.location,
+      total: registration.total,
+      contact: registration.contact,
+      breakdown: registration.breakdown,
+      prayer_expectations: registration.prayerExpectations
+    };
+    const { data, error } = await supabase.from('Viwers').insert([cloudRecord]);
     if (error) {
       console.error('Supabase insert error:', error);
       notify('Saved locally. Cloud sync failed: ' + (error.message || 'Unknown error'));
